@@ -16,7 +16,7 @@ def voc_filter(x):
 
 # @lru_cache(maxsize=None) 
 def lemmatizer(x):
-    print(x)
+    # print(x)
     
     x_norm = []
     import pymorphy2
