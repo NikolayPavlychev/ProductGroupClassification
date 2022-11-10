@@ -196,7 +196,7 @@ if str(sys.argv[2]) == 'inference_production':
     print('Load preprocessing data')
     time_start = time.time()
 
-    dataset_train_test_target = pd.read_csv(ROOT_DIR + '/'+prefix_name+'_id_target'+'_inference_production.csv',sep=';')
+    dataset_train_test_target = pd.read_csv(ROOT_DIR + '/'+prefix_name+'_id_target'+'_inference_production.csv',sep=';',nrows=50000)
 
     dataset_train_test_target = dataset_train_test_target.iloc[7:,:]
     dataset_train_test_target = dataset_train_test_target.reset_index(drop=True)
@@ -241,13 +241,14 @@ if str(sys.argv[2]) == 'inference_production':
     X_id = y_predicted
 
     X_id['predict']  = clf.predict(X)
+    X_id['predict_proba'] = np.max(clf.predict_proba(X),axis=1)
     print('accuracy=',evaluate(X_id,'test',prefix_name))
 
     target_group_code_mapping = joblib.load(ROOT_DIR+ '/target_group_code_mapping_full.pickle')
     target_group_code_mapping = dict((v, int(k)) for k, v in target_group_code_mapping.items())
 
     X_id['group_code_predict'] = X_id['predict'].apply(lambda x: target_group_code_mapping[x])
-    X_id = X_id[['artical','group_code','group_code_predict']]
+    X_id = X_id[['artical','group_code','group_code_predict','predict_proba']]
     X_id.to_csv(ROOT_DIR + '/'+prefix_name+'_predictions'+'_inference_productions.csv',sep=';',index=False)
 
     print('Successfully!')
